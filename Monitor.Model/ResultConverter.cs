@@ -20,11 +20,11 @@ namespace Monitor.Model
             {
                 ResultType = ResultType.Backtest,
                 Charts = new Dictionary<string, Charting.ChartDefinition>(backtestResult.Charts.MapToChartDefinitionDictionary()),
-                Orders = new Dictionary<int, Order>(backtestResult.Orders),
-                ProfitLoss = new Dictionary<DateTime, decimal>(backtestResult.ProfitLoss),
-                Statistics = new Dictionary<string, string>(backtestResult.Statistics),
-                RuntimeStatistics = new Dictionary<string, string>(backtestResult.RuntimeStatistics),
-                RollingWindow = new Dictionary<string, AlgorithmPerformance>(backtestResult.RollingWindow)                
+                Orders = new Dictionary<int, Order>(backtestResult.Orders ?? new Dictionary<int, Order>()),
+                ProfitLoss = new Dictionary<DateTime, decimal>(backtestResult.ProfitLoss ?? new Dictionary<DateTime, decimal>()),
+                Statistics = new Dictionary<string, string>(backtestResult.Statistics ?? new Dictionary<string, string>()),
+                RuntimeStatistics = new Dictionary<string, string>(backtestResult.RuntimeStatistics ?? new Dictionary<string, string>()),
+                RollingWindow = new Dictionary<string, AlgorithmPerformance>(backtestResult.RollingWindow ?? new Dictionary<string, AlgorithmPerformance>())                
             };
         }
 
@@ -47,7 +47,9 @@ namespace Monitor.Model
             if (result.ResultType != ResultType.Backtest) throw new ArgumentException(@"Result is not of type Backtest", nameof(result));
 
             // Total performance is always null in the original data holder
-            return new BacktestResult(true, result.Charts.MapToChartDictionary(), result.Orders, result.ProfitLoss, result.Statistics, result.RuntimeStatistics, result.RollingWindow);
+
+            var backtestResultParameters = new BacktestResultParameters(result.Charts.MapToChartDictionary(), result.Orders, result.ProfitLoss, result.Statistics, result.RuntimeStatistics, result.RollingWindow, null, null);
+            return new BacktestResult(backtestResultParameters);
         }
 
         public LiveResult ToLiveResult(Result result)
@@ -57,7 +59,9 @@ namespace Monitor.Model
 
             // Holdings is not supported in the current result.
             // ServerStatistics is not supported in the current result.
-            return new LiveResult(true, result.Charts.MapToChartDictionary(), result.Orders, result.ProfitLoss, null, null, result.Statistics, result.RuntimeStatistics);
+
+            var liveResultParameters = new LiveResultParameters(result.Charts.MapToChartDictionary(), result.Orders, result.ProfitLoss, null, null, result.Statistics, result.RuntimeStatistics, null, null);
+            return new LiveResult(liveResultParameters);
         }
     }
 }

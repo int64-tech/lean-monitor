@@ -15,7 +15,9 @@ namespace Monitor.Model
     {
         public static Dictionary<string, ChartDefinition> MapToChartDefinitionDictionary(this IDictionary<string, Chart> sourceDictionary)
         {
-            return sourceDictionary.ToDictionary(entry => entry.Key, entry => MapToChartDefinition(entry.Value));
+            return sourceDictionary == null ? 
+                new Dictionary<string, ChartDefinition>() : 
+                sourceDictionary.ToDictionary(entry => entry.Key, entry => MapToChartDefinition(entry.Value));
         }
 
         public static Dictionary<string, Chart> MapToChartDictionary(this IDictionary<string, ChartDefinition> sourceDictionary)
@@ -143,6 +145,7 @@ namespace Monitor.Model
                     return SeriesType.Bar;
                     
                 default:
+                    return SeriesType.Line;
                     throw new NotSupportedException($"SeriesType {seriesType} is not supported.");
             }
         }

@@ -6,6 +6,7 @@ using NetMQ;
 using NetMQ.Sockets;
 using Newtonsoft.Json;
 using QuantConnect.Orders;
+using QuantConnect.Orders.Serialization;
 using QuantConnect.Packets;
 
 namespace Monitor.Model.Sessions
@@ -100,7 +101,8 @@ namespace Monitor.Model.Sessions
                             _packetQueue.Enqueue(liveResultEventModel);
                             break;
                         case PacketType.BacktestResult:
-                            var backtestResultEventModel = JsonConvert.DeserializeObject<BacktestResultPacket>(payload);
+                            var converter = new OrderEventJsonConverter("id");
+                            var backtestResultEventModel = JsonConvert.DeserializeObject<BacktestResultPacket>(payload, converter);
                             _packetQueue.Enqueue(backtestResultEventModel);
                             break;
                         case PacketType.Log:
